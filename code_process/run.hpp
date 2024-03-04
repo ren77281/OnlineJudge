@@ -13,8 +13,10 @@ namespace ns_run {
     using std::string;
     class Runer {
     public:
-        // 限制程序资源：时长（秒），内存（字节）
-        static void SetRLimit(int cpuLimit, int memLimit) {
+        // 限制程序资源：时长（秒），内存（MB）
+        static void SetRLimit(int cpuLimit, uint64_t memLimit) {
+            // 内存的单位转换
+            memLimit = memLimit * 1024 * 1024;
             // 设置时间（cpu时长）限制
             struct rlimit cpuRLimit;
             cpuRLimit.rlim_cur = cpuLimit, cpuRLimit.rlim_max = RLIM_INFINITY;
