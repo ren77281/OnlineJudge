@@ -2,15 +2,18 @@
 
 #include <string>
 #include <atomic>
+#include <vector>
 #include <unistd.h>
 #include <fstream>
 #include <iostream>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/time.h>
+#include <boost/algorithm/string.hpp>
 
 namespace ns_util {
     using std::string;
+    using std::vector;
     string code_path = "./code/";
     
     class PathUtil {
@@ -92,5 +95,10 @@ namespace ns_util {
             unsigned int value = count.load();
             return TimeUtil::GetMsTime() + "_" + std::to_string(value);
         }
+        class StringUtil {
+            static void SplitString(const string &src, vector<string> &tokens, const string &sep) {
+                boost::split(tokens, src, boost::is_any_of(" "), boost::algorithm::token_compress_on);
+            }
+        };
     };
 }

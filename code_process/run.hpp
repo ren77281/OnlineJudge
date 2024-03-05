@@ -53,7 +53,7 @@ namespace ns_run {
                 SetRLimit(cpuLimit, memLimit);
                 // 替换子进程以执行可执行文件
                 execlp(exeFile.c_str(), exeFile.c_str(), NULL);
-                // 替换失败的处理
+                // 若替换失败，关闭文件
                 close(inFileFd), close(outFileFd), close(errFileFd);
                 LOG(ERROR) << "准备运行程序时，子进程替换失败\n";
                 return -3;

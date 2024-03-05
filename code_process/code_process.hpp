@@ -13,6 +13,7 @@ namespace ns_code_process {
     using namespace ns_util;
     using namespace ns_log;
     using std::string;
+
     class CodeProcess {
     public:
         /*
@@ -44,17 +45,26 @@ namespace ns_code_process {
             Json::Value outValue;
 
             do {
-                if (code.size() == 0) { status = -1; continue; } // 代码为空
-                if (!FileUtil::WriteFile(PathUtil::Cpp(fileName), code)) { status = -2; continue; } // 服务器错误，无法写入用户代码
+                // 代码为空
+                if (code.size() == 0) { status = -1; continue; } 
+                // 写入用户所写代码
+                if (!FileUtil::WriteFile(PathUtil::Cpp(fileName), code)) { status = -2; continue; } 
+                // 编译用户代码
                 if (!Compiler::Compile(fileName)) { 
                     status = -3; // 无法编译用户代码
                     string fileComerr = FileUtil::ReadFile(PathUtil::CompileError(fileName), true);
                     outValue["comerr"] = fileComerr;
                     continue; 
                 }
+                // 写入input文件，若Json串中存在input，则此次提交为用户自测
+                // 若不存在input，则input为所有的用例
+                if (input.size()) {
+                    if (!FileUtil::WriteFile(PathUtil::In(fileName), input)) { status = -4; continue; } 
+                }
 
+                // 运行用户代码
                 int runResult = Runer::Run(fileName, cpuLimit, memLimit);
-                if (runResult < 0) {status = -4; continue; }
+                if (runResult < 0) {status = -5; continue; }
                 // 用户代码发生运行时错误
                 else if (runResult > 0) {
                     status = runResult; 

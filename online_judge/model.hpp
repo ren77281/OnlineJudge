@@ -21,6 +21,7 @@
 namespace ns_model {
     using std::string;
     using std::vector;
+    namespace fs = std::filesystem;
     // 描述所有题目的文件
     const string puzzleList = "./puzzles/puzzle.list";
     // 该路径下，每个题目拥有单独的文件夹，存储着样例，以及正式的输入输出
@@ -31,7 +32,7 @@ namespace ns_model {
         int timeLimit, memLimit;
         string title, desc;
         vector<string> in, out;
-    }
+    };
 
     class Model {
     public:
@@ -39,8 +40,8 @@ namespace ns_model {
             assert (LoadPuzzleList());
         }
         bool LoadPuzzleList() {
-            ifstream in(puzzleList);
-            if (!in.open()) {
+            std::ifstream in(puzzleList);
+            if (!in.is_open()) {
                 LOG(FATAL) << "加载题目列表失败，无法启动系统！\n";
                 return false;
             }
@@ -48,8 +49,8 @@ namespace ns_model {
             while (getline(in, line)) {
                 vector<string> tokens;
                 // TODO分割字符串
-                StringUtil::SplitString(line, tokens, " ");
-                struct puzzle;
+                // StringUtil::SplitString(line, tokens, " ");
+                struct Puzzle puzzle;
                 puzzle.id = atoi(tokens[0].c_str());
                 puzzle.title = tokens[1];
                 puzzle.hard = atoi(tokens[2].c_str());
@@ -58,35 +59,42 @@ namespace ns_model {
 
                 string path = puzzlePath + tokens[0] + "/";
                 // 读取题目的输入文件
+                std::cout << "in:\n";
                 for (const auto &entry : fs::directory_iterator(path + "in")) {
                     if (entry.is_regular_file()) {
-                        ifstream puzzleIn(entry.path());
-                        if (puzzleIn.open()) {
+                        std::ifstream puzzleIn(entry.path());
+                        if (puzzleIn.is_open()) {
                             string puzzleLine, allIn;
                             while (getline(puzzleIn, puzzleLine)) {
                                 allIn += puzzleLine;
                             }
+                            // debug
+                            std::cout << allIn << "\n";
                             puzzle.in.push_back(allIn);
                             puzzleIn.close();
                         }
                     }
                 }
+                std::cout << "out:\n";
                 // 读取题目的输出文件
                 for (const auto &entry : fs::directory_iterator(path + "out")) {
                     if (entry.is_regular_file()) {
-                        ifstream puzzleOut(entry.path());
-                        if (puzzleOut.open()) {
+                        std::ifstream puzzleOut(entry.path());
+                        if (puzzleOut.is_open()) {
                             string puzzleLine, allOut;
                             while (getline(puzzleOut, puzzleLine)) {
                                 allOut += puzzleLine;
                             }
-                            puzzle.in.push_back(allOut);
+                            // debug
+                            std::cout << allOut << "\n";
+                            puzzle.out.push_back(allOut);
                             puzzleOut.close();
                         }
                     }
                 }
                 puzzles[puzzle.id] = puzzle;
             }
+            return true;
         }
         bool GetAllPuzzles(vector<Puzzle> &getPuzzles) {
             if (getPuzzles.size() == 0) {
@@ -106,6 +114,6 @@ namespace ns_model {
             return true;
         }
     private:
-        unordered_map<int, Puzzle> puzzles;
+        std::unordered_map<int, Puzzle> puzzles;
     };
 }
