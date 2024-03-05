@@ -9,8 +9,8 @@ namespace ns_view {
     const string templatePath = "./template_html/";
     class View {
     public:
-        void ExpandAllHtml(vector<struct Puzzle> &allPuzzle, string &outHtml) {
-            const string allTemplatePath = templatePath + "allPuzzle.html";
+        void ExpandList(vector<struct BriefPuzzle> &Puzzles, string &outHtml) {
+            const string& TemplatePath = templatePath + "puzzles.html";
             ctemplate::TemplateDictionary root("allPuzzle");
             for (auto &puzzle : allPuzzles) {
                 ctemplate::TemplateDictionary *sub = root.AddIncludeDictionary("puzzle");
