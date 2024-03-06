@@ -13,33 +13,46 @@ namespace ns_code_process {
     using namespace ns_util;
     using namespace ns_log;
     using std::string;
+    using std::vector;
 
     class CodeProcess {
     public:
         /*
         输入型参数inJson：
             code：用户提交的代码
-            input：用户的标准输入
+            in：用来测评的输入样例
+            out：用来测评的输出样例
             memLimit：该题的内存限制
             cpuLimit：该题的时间限制
         输出型参数outJson:
             status：处理程序的状态码
             reason：请求结果（对于状态码的解释）
-            stdout：用户代码的标准输出
+            userOut：用户的输出结果
             comerr：用户代码的编译错误
             runerr：用户代码的运行时错误
         */
         static void Start(const string& inJson, string& outJson) {
             // 反序列化String串为Json串
+            vector<string> in, out, userOut;
+
             Json::Value inValue;
-            Json::Reader reader;
-            reader.parse(inJson, inValue); 
+            Json::CharReaderBuilder readerBuilder;
+            string errors;
+            std::istringstream iss(inJson);
+            if (!Json::parseFromStream(readerBuilder, iss, &inValue, &errors)) {
+                LOG(FATAL) << "反序列化Json串失败\n";
+                return;
+            }
+            for (const auto& str : inValue["in"]) {
+                in.push_back(str.asString());
+            }
+            for (const auto& str : inValue["out"]) {
+                out.push_back(str.asString());
+            }
             // 读取Json串中的内容
             string code = inValue["code"].asString();
-            string input = inValue["input"].asString();
             int memLimit = inValue["memLimit"].asInt();
             int cpuLimit = inValue["cpuLimit"].asInt();
-            
             int status = 0;
             string fileName = FileUtil::UniqFileName(); 
             Json::Value outValue;
@@ -56,15 +69,10 @@ namespace ns_code_process {
                     outValue["comerr"] = fileComerr;
                     continue; 
                 }
-                // 写入input文件，若Json串中存在input，则此次提交为用户自测
-                // 若不存在input，则input为所有的用例
-                if (input.size()) {
-                    if (!FileUtil::WriteFile(PathUtil::In(fileName), input)) { status = -4; continue; } 
-                }
 
                 // 运行用户代码
-                int runResult = Runer::Run(fileName, cpuLimit, memLimit);
-                if (runResult < 0) {status = -5; continue; }
+                int runResult = Runer::Run(fileName, in, userOut, cpuLimit, memLimit);
+                if (runResult < 0) {status = -4; continue; }
                 // 用户代码发生运行时错误
                 else if (runResult > 0) {
                     status = runResult; 
@@ -72,19 +80,30 @@ namespace ns_code_process {
                     outValue["stderr"] = fileRunerr; 
                     continue; 
                 }
-                // 用户代码正确运行
+                // 用户代码正确运行，将正确结果和用户的输出结果比较
                 else { 
-                    string fileStdout = FileUtil::ReadFile(PathUtil::Out(fileName), true);
-                    outValue["stdout"] = fileStdout; 
-                    continue;
+                    if (out.size() != userOut.size()) {
+                        status = -5;
+                        continue;
+                    }
+                    for (int i = 0; i < out.size(); ++ i) {
+                        if (out[i] != userOut[i]) {
+                            status = -5;
+                            break;
+                        }
+                    }
                 }
             } while (false);
 
+            for (auto &uout : userOut) {
+                outValue["userOut"].append(uout);
+            }
+            
             outValue["status"] = status;
             outValue["reason"] = StatusToReason(status);
-            Json::StyledWriter writer;
-            outJson = writer.write(outValue);
-
+            Json::StreamWriterBuilder writerBuilder;
+            outJson = Json::writeString(writerBuilder, outValue);
+            
             // 清理临时文件
             CleanTempFile(fileName);
         }
@@ -112,6 +131,9 @@ namespace ns_code_process {
                 break;
             case -4:
                 reason = "未知错误，请重试\n";
+                break;
+            case -5:
+                reason = "结果错误\n";
                 break;
             case SIGXCPU:
                 reason = "程序超时，请检查时间复杂度\n";

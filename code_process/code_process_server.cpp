@@ -23,26 +23,5 @@ int main(int argc, char *argv[]) {
     });
 
     svr.listen("0.0.0.0", atoi(argv[1]));
-    // string code = R"(#include <iostream>
-    //     using namespace std;
-    //     int main(){
-    //         int t = 10 / 0;
-    //         cout << "代码处理模块测试成功\n";
-    //         return 0;
-    //     }
-    // )";
-    // Json::Value inValue;
-    // inValue["input"] = "";
-    // inValue["code"] = code;
-    // inValue["memLimit"] = 1024 * 1024 * 10;
-    // inValue["cpuLimit"] = 1;
-    // Json::StyledWriter writer;
-    // string inJson;
-    // inJson = writer.write(inValue);
-    // std::cout << "这是输入的Json串\n" << inJson << "\n";
-
-    // string outJson;
-    // CodeProcess::Start(inJson, outJson);
-    // std::cout << "这是返回的Json串\n" << outJson << "\n";
     return 0;
 }
