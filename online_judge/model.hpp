@@ -72,6 +72,17 @@ namespace ns_model {
             return true;
         }
 
+        bool GetPuzzleList(vector<struct BriefPuzzle> &out) {
+            if (puzzles.size() == 0) {
+                LOG(ERROR) << "获取题库失败，预载题目数量为0！\n";
+                return false;
+            } 
+            for (auto p : puzzles) {
+                out.push_back(p);
+            }
+            return true;
+        }
+
         // 根据题号将题目加载到puzzles中
         bool LoadOnePuzzle(int id) {
             if (briefPuzzles.count(id) == 0) {
@@ -139,7 +150,6 @@ namespace ns_model {
     private:
         std::unordered_map<uint64_t, Puzzle> puzzles;
         std::map<uint64_t, BriefPuzzle> briefPuzzles;
-        
     };
 }
 
