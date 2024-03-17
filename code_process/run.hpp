@@ -10,11 +10,11 @@
 #include <sys/resource.h>
 
 /*
-run.hpp：负责源文件的运行
-static void SetRLimit(int timeLimit, int memLimit)：设置进程能使用的资源上限，也就是设置程序可使用的时间与空间
-static int Run(const string& fileName, vector<string> &in, vector<string> &userOut, 
-int timeLimit, int memLimit)：根据测试用例in运行可执行程序，保存结果到userOut中。有几个用例就创建几个子进程运行用例
-返回值为int，若>0表示子进程异常，被系统信号终止。=0表示运行完毕，无异常发生。<0表示遇到系统自身的错误
+    run.hpp：负责源文件的运行
+    static void SetRLimit(int timeLimit, int memLimit)：设置进程能使用的资源上限，也就是设置程序可使用的时间与空间
+    static int Run(const string& fileName, vector<string> &in, vector<string> &userOut, 
+    int timeLimit, int memLimit)：根据测试用例in运行可执行程序，保存结果到userOut中。有几个用例就创建几个子进程运行用例
+    返回值为int，若>0表示子进程异常，被系统信号终止。=0表示运行完毕，无异常发生。<0表示遇到系统自身的错误
 */
 
 namespace ns_run {

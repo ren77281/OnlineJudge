@@ -8,11 +8,11 @@
 #include "../comm/util.hpp"
 
 /*
-code_process.hpp：连结compiler.hpp和run.hpp，负责编译并运行代码
-static void CleanTempFile(const string& fileName)：清理运行源文件时产生的临时文件，包括源文件
-static string StatusToReason(int status)：将编译运行代码产生的错误码（自己规定），转换成文字描述
-static void CompileRun(const string& inJson, string& outJson)：编译并运行代码，输入为inJson字符串，输出为outJson字符串
-Json格式将在下方说明
+    code_process.hpp：连结compiler.hpp和run.hpp，负责编译并运行代码
+    static void CleanTempFile(const string& fileName)：清理运行源文件时产生的临时文件，包括源文件
+    static string StatusToReason(int status)：将编译运行代码产生的错误码（自己规定），转换成文字描述
+    static void CompileRun(const string& inJson, string& outJson)：编译并运行代码，输入为inJson字符串，输出为outJson字符串
+    Json格式将在下方说明
 */
 
 namespace ns_code_process {
@@ -26,6 +26,7 @@ namespace ns_code_process {
     class CodeProcess {
     public:
         /*
+        将用户自测和判题功能耦合在一起，样例数量为1，此时为用户自测
         输入型参数inJson：
             code：用户提交的代码
             in：标准答案/用户自测的输入样例
@@ -95,8 +96,8 @@ namespace ns_code_process {
                     outValue["runerr"] = fileRunerr; 
                     continue; 
                 }
-                // 用户代码正确运行，将正确结果和用户的输出结果比较
-                else { 
+                // 用户代码正确运行且此时的请求为判题，将正确结果和用户的输出结果比较
+                else if (in.size() != 1) { 
                     if (out.size() != userOut.size()) {
                         status = -4;
                         continue;

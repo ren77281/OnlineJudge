@@ -10,9 +10,9 @@
 #include "../comm/util.hpp"
 
 /*
-compiler.hpp：负责源文件的编译
-static int Compile(const std::string& fileName)：根据传入的文件名，fork子进程以编译相应的文件
-返回负数时，表示系统自身发生错误导致无法编译。返回0表示编译完成，返回正数时，表示用户代码存在语法错误导致编译失败
+    compiler.hpp：负责源文件的编译
+    static int Compile(const std::string& fileName)：根据传入的文件名，fork子进程以编译相应的文件
+    返回负数时，表示系统自身发生错误导致无法编译。返回0表示编译完成，返回正数时，表示用户代码存在语法错误导致编译失败
 */
 
 namespace ns_compiler {
