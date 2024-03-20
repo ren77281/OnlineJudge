@@ -1,6 +1,6 @@
-test:test.cpp
-	g++ -o $@ $^ -std=c++17
+online_judge:online_judge.cpp
+	g++ -o $@ $^ -std=c++17 -lpthread -lctemplate -ljsoncpp
 
 .PHONY:clean
 clean:
-	rm -f test
+	rm -f online_judge

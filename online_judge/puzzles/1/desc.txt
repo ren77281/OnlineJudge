@@ -1,4 +1,4 @@
-# A - TLD 
+# TLD 
 Time Limit: 2 sec / Memory Limit: 1024 MB
 
 ### Problem Statement
@@ -9,9 +9,9 @@ In other words, print the longest suffix of $S$ that does not contain `.`.
 
 ### Constraints
 
--   $S$ is a string of length between $2$ and $100$, inclusive, consisting of lowercase English letters and `.`.
--   $S$ contains at least one `.`.
--   $S$ does not end with `.`.
+- $S$ is a string of length between $2$ and $100$, inclusive, consisting of lowercase English letters and `.`.
+- $S$ contains at least one `.`.
+- $S$ does not end with `.`.
 ***
 ### Input
 

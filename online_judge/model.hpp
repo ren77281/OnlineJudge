@@ -13,10 +13,16 @@
 
 /*
     model.hpp：负责数据交互模块，提供加载题目列表的方法
-    题目以文件的方式存储在online_judge/puzzles
+    题目以文件的形式存储在online_judge/puzzles
     puzzles目录下存在puzzle.list文件，存储着所有题目的简要信息
-    ：题号 题目 难度分值 时间要求 空间要求
-    在puzzles目录下存在与题号相同的文件夹，存储in、out、desc，分别为输入、输出、题目描述（包括提示样例）
+    简要信息的格式为：题号 题目 难度分值 时间要求 空间要求
+    在puzzles目录下存在与题号相同的文件夹，存储in、out、desc三个文件，分别为输入、输出、题目描述（包括提示样例）
+    BriefPuzzle结构体：存储题目的简要信息 Puzzle结构体：存储题目的具体信息
+    bool LoadPuzzleList()：打开puzzle.list文件，解析文件内容，初始化类成员std::map<int, BriefPuzzle> briefPuzzles
+    该函数在Model构造函数中被调用
+    bool GetPuzzleList(vector<struct BriefPuzzle> &out)：获取私有成员briefPuzzles的数据
+    bool LoadOnePuzzle(int id)：根据题号id获取题目的详细信息，以懒汉的形式构建puzzles结构体，该成员类型为std::unordered_map<int, Puzzle>
+    bool GetOnePullze(int id, Puzzle &getPuzzle)：根据题号id输出一道题的详细信息到getPuzzle中
 */
 
 namespace ns_model {
@@ -29,12 +35,12 @@ namespace ns_model {
     const string puzzlePath = "./puzzles/";
 
     struct BriefPuzzle {
-        uint64_t id, timeLimit, memLimit;
+        int id, timeLimit, memLimit;
         string title, hard;
     };
 
     struct Puzzle {
-        uint64_t id, timeLimit, memLimit;
+        int id, timeLimit, memLimit;
         string title, desc;
         vector<string> in, out;
     };
@@ -73,12 +79,12 @@ namespace ns_model {
         }
 
         bool GetPuzzleList(vector<struct BriefPuzzle> &out) {
-            if (puzzles.size() == 0) {
+            if (briefPuzzles.size() == 0) {
                 LOG(ERROR) << "获取题库失败，预载题目数量为0！\n";
                 return false;
             } 
-            for (auto p : puzzles) {
-                out.push_back(p);
+            for (auto p : briefPuzzles) {
+                out.push_back(p.second);
             }
             return true;
         }
@@ -99,8 +105,6 @@ namespace ns_model {
 
             // 获取题目的全部输入与输出
             string path = puzzlePath + std::to_string(id) + "/";
-            // 读取题目的输入文件
-            std::cout << "in:\n";
             for (const auto &entry : fs::directory_iterator(path + "in")) {
                 if (entry.is_regular_file()) {
                     std::ifstream puzzleIn(entry.path());
@@ -109,14 +113,11 @@ namespace ns_model {
                         while (getline(puzzleIn, puzzleLine)) {
                             allIn += puzzleLine;
                         }
-                        // debug
-                        std::cout << allIn << "\n";
                         puzzle.in.push_back(allIn);
                         puzzleIn.close();
                     }
                 }
             }
-            std::cout << "out:\n";
             // 读取题目的输出文件
             for (const auto &entry : fs::directory_iterator(path + "out")) {
                 if (entry.is_regular_file()) {
@@ -126,8 +127,6 @@ namespace ns_model {
                         while (getline(puzzleOut, puzzleLine)) {
                             allOut += puzzleLine;
                         }
-                        // debug
-                        std::cout << allOut << "\n";
                         puzzle.out.push_back(allOut);
                         puzzleOut.close();
                     }
@@ -137,7 +136,7 @@ namespace ns_model {
             return true;
         }
 
-        bool GetOnePullze(uint64_t id, Puzzle &getPuzzle) {
+        bool GetOnePullze(int id, Puzzle &getPuzzle) {
             if (puzzles.count(id) == 0) {
                 if (!LoadOnePuzzle(id)) {
                     return false;
@@ -148,8 +147,8 @@ namespace ns_model {
         }
 
     private:
-        std::unordered_map<uint64_t, Puzzle> puzzles;
-        std::map<uint64_t, BriefPuzzle> briefPuzzles;
+        std::unordered_map<int, Puzzle> puzzles;
+        std::map<int, BriefPuzzle> briefPuzzles;
     };
 }
 

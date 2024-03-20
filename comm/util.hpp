@@ -11,6 +11,11 @@
 #include <sys/time.h>
 #include <boost/algorithm/string.hpp>
 
+/*
+FileUtil：
+static bool WriteFile(const string& fileName, const string& content)：将content写入fileName文件中
+*/
+
 namespace ns_util {
     using std::string;
     using std::vector;
@@ -95,10 +100,11 @@ namespace ns_util {
             unsigned int value = count.load();
             return TimeUtil::GetMsTime() + "_" + std::to_string(value);
         }
-        class StringUtil {
-            static void SplitString(const string &src, vector<string> &tokens, const string &sep) {
-                boost::split(tokens, src, boost::is_any_of(" "), boost::algorithm::token_compress_on);
-            }
-        };
+    };
+    class StringUtil {
+    public:
+        static void SplitString(const string &src, vector<string> &tokens, const string &sep) {
+            boost::split(tokens, src, boost::is_any_of(sep), boost::algorithm::token_compress_on);
+        }
     };
 }
