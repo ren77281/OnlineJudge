@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{id}}.{{title}}</title>
+    <title>{{puzzleId}}.{{title}}</title>
     <!-- 引入ACE插件 -->
     <!-- 官网链接：https://ace.c9.io/ -->
     <!-- CDN链接：https://cdnjs.com/libraries/ace -->
@@ -200,7 +200,7 @@
         function submit(){
             // 1. 收集当前页面的有关数据, 1. 题号 2.代码
             let code = editor.getSession().getValue();
-            let puzzleId = $(".puzzleId").text();
+            let puzzleId = $(".puzzleId").text().trim();
             let judgeUrl = "/judge/" + puzzleId;
             // 2. 构建json，并通过ajax向后台发起基于http的json请求
             $.ajax({

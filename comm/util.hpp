@@ -86,7 +86,7 @@ namespace ns_util {
             return content;
         }
         static bool WriteFile(const string& fileName, const string& content) {
-            std::ofstream out(fileName);
+            std::ofstream out(fileName, std::ios::trunc);
             if (out.is_open()) {
                 out.write(content.c_str(), content.size());
                 out.close();

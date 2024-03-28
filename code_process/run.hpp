@@ -22,7 +22,7 @@ namespace ns_run {
     class Runer {
     public:
         // 限制程序资源：时长（秒），内存（MB）
-        static void SetRLimit(int timeLimit, int memLimit) {
+        static void SetRLimit(int timeLimit, long long memLimit) {
             // 内存的单位转换
             memLimit = memLimit * 1024 * 1024;
             // 设置时间（cpu时长）限制
@@ -40,6 +40,11 @@ namespace ns_run {
         static int Run(const string& fileName, 
             vector<string> &in, vector<string> &userOut,
             int timeLimit, int memLimit) {
+            string exeFile = PathUtil::Exe(fileName);
+            string inFile = PathUtil::In(fileName);
+            string outFile = PathUtil::Out(fileName);
+            string errFile = PathUtil::RunError(fileName);
+            
             // 根据测试用例的数量创建子进程
             for (int i = 0; i < in.size(); ++ i) {
                 pid_t pid = fork();
@@ -48,15 +53,10 @@ namespace ns_run {
                     return -1;
                 }
                 else if (pid == 0) {
-                    string exeFile = PathUtil::Exe(fileName);
-                    string inFile = PathUtil::In(fileName);
-                    string outFile = PathUtil::Out(fileName);
-                    string errFile = PathUtil::RunError(fileName);
-
                     umask(0);
-                    int inFileFd = open(inFile.c_str(), O_CREAT | O_TRUNC | O_WRONLY, 0644);
-                    int outFileFd = open(outFile.c_str(), O_CREAT | O_TRUNC | O_WRONLY, 0644);
-                    int errFileFd = open(errFile.c_str(), O_CREAT | O_TRUNC | O_WRONLY, 0644);
+                      int inFileFd = open(inFile.c_str(), O_CREAT | O_TRUNC | O_RDWR, 0644);
+                    int outFileFd = open(outFile.c_str(), O_CREAT | O_TRUNC | O_RDWR, 0644);
+                    int errFileFd = open(errFile.c_str(), O_CREAT | O_TRUNC | O_RDWR, 0644);
                     if (inFileFd < 0 || outFileFd < 0 || errFileFd < 0) {
                         close(inFileFd), close(outFileFd), close(errFileFd);
                         LOG(ERROR) << "准备运行程序时，重定向流文件打开失败\n";
@@ -67,14 +67,15 @@ namespace ns_run {
                         LOG(FATAL) << "写入标准输入文件失败！\n";
                         return -3;
                     }
-                    // 将标准流重定向到文件
-                    dup2(inFileFd, 0), dup2(outFileFd, 1), dup2(errFileFd, 2);
+                    // std::cout << "这是当前输入\n";
+                    // std::cout << FileUtil::ReadFile(PathUtil::In(fileName), true);
                     // 设置程序的资源限制
                     SetRLimit(timeLimit, memLimit);
+                    // 将标准流重定向到文件
+                    dup2(inFileFd, 0), dup2(outFileFd, 1), dup2(errFileFd, 2);
                     // 替换子进程以执行可执行文件
                     execlp(exeFile.c_str(), exeFile.c_str(), NULL);
                     // 若替换失败，关闭文件
-                    close(inFileFd), close(outFileFd), close(errFileFd);
                     LOG(ERROR) << "准备运行程序时，子进程替换失败\n";
                     return -4;
                 }
@@ -85,9 +86,10 @@ namespace ns_run {
                         LOG(ERROR) << "子进程异常退出，退出码为:" << (status & 0xff) << "\n";
                         return status & 0xff;
                     }
+                    // std::cout << "这是当前输出\n";
+                    // std::cout << FileUtil::ReadFile(PathUtil::Out(fileName), true);
                     // 保存用户的输出
-                    userOut[i] = FileUtil::ReadFile(PathUtil::Out(fileName), true);
-                    return 0;
+                    userOut.push_back(FileUtil::ReadFile(PathUtil::Out(fileName), true));
                 }
             }
             return 0;

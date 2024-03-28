@@ -54,7 +54,7 @@ int main() {
         }
 
         int main()
-        {
+        {qqq
             ios::sync_with_stdio(false), cin.tie(0),cout.tie(0);
             solve();
             return 0;

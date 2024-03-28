@@ -163,7 +163,7 @@ namespace ns_control {
         bool LoadOnePuzzle(int id, string &html) {
             struct Puzzle puzzle;
             if (model.GetOnePullze(id, puzzle)) {
-                view.ExpandOnePuzzle(id, html);
+                view.ExpandOnePuzzle(id, puzzle.title, html);
             }
             return false;
         }
@@ -211,7 +211,6 @@ namespace ns_control {
             // 序列化complieValue为compileJson
             Json::StreamWriterBuilder writerBuilder;
             string compileJson = Json::writeString(writerBuilder, compileValue);
-
             // 使用负载均衡选择主机，再将序列化完成的Json串提交给code_process服务
             while (true) {
                 Machine m; int mid;
@@ -222,13 +221,15 @@ namespace ns_control {
                 m.IncreaseLoad();
                 httplib::Client cli(m.ip, m.port);
                 LOG(INFO) << "选择的主机ip和端口分别为:" << m.ip << ' ' << m.port << "主机负载为:" << m.load << "\n";
-                if (auto res = cli.Post("/code_porcess", compileJson, "application/json; charset=utf-8")) {
+                if (auto res = cli.Post("/code_process", compileJson, "application/json; charset=utf-8")) {
                     if (res->status == 200) {
                         outJson = res->body;
                         m.DecreaseLoad();
+                        LOG(INFO) << "代码成功编译，服务ip和端口分别为：" << m.ip << ' ' << m.port << "\n";
                         return; // 编译运行完成，直接返回
                     }
                     else {
+                        LOG(INFO) << "请求发送成功，但服务器出现错误，服务ip，端口与错误码分别为：" << m.ip << ' ' << m.port << ' ' << res->status << "\n";
                         m.DecreaseLoad();
                     }
                 }

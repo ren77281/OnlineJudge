@@ -53,9 +53,12 @@ namespace ns_code_process {
                 return;
             }
             // 读取Json串中的内容
+            int count = 1;
             for (const auto& str : inValue["in"]) {
                 in.push_back(str.asString());
+
             }
+            count = 1;
             for (const auto& str : inValue["out"]) {
                 out.push_back(str.asString());
             }
@@ -84,7 +87,6 @@ namespace ns_code_process {
                     status = -2;
                     continue;
                 }
-
                 // 运行用户代码
                 int runResult = Runer::Run(fileName, in, userOut, timeLimit, memLimit);
                 // 系统自身出错
@@ -103,6 +105,7 @@ namespace ns_code_process {
                         continue;
                     }
                     for (int i = 0; i < out.size(); ++ i) {
+                        if (userOut[i].back() == '\n') userOut[i].pop_back();
                         if (out[i] != userOut[i]) {
                             status = -4;
                             break;
@@ -120,7 +123,7 @@ namespace ns_code_process {
             outValue["reason"] = StatusToReason(status);
             Json::StreamWriterBuilder writerBuilder;
             outJson = Json::writeString(writerBuilder, outValue);
-            
+            std::cout << outJson << "\n";
             // 清理临时文件
             CleanTempFile(fileName);
         }

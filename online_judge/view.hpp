@@ -39,10 +39,12 @@ namespace ns_view {
         // 两个部分
         // 左边为题目描述，以markdown的格式显示题目
         // 右边为代码部分，后续可以提供语言选项
-        void ExpandOnePuzzle(int id, string &outHtml) {
+        void ExpandOnePuzzle(int id, const string& title, string &outHtml) {
             ctemplate::TemplateDictionary root("Puzzle");
             string desc = FileUtil::ReadFile("./puzzles/" + to_string(id) + "/desc.txt", true);
             root.SetValue("markdownText", desc);
+            root.SetValue("puzzleId", to_string(id));
+            root.SetValue("title", title);
             ctemplate::Template *tql = ctemplate::Template::GetTemplate(puzzlePath, ctemplate::DO_NOT_STRIP);
             tql->Expand(&outHtml, &root);
         }

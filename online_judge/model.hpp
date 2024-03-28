@@ -132,6 +132,7 @@ namespace ns_model {
                     }
                 }
             }
+
             puzzles[id] = puzzle;
             return true;
         }
