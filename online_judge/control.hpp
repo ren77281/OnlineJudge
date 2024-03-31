@@ -22,7 +22,7 @@
         bool LoadPuzzleList(string &html)：加载题目列表，通过model模块获取briefPuzzles，再将数据通过view模块渲染网页
         bool LoadOnePuzzle(int id, string &html)：加载具体题目，通过model模块获取具体题目的信息Puzzle，再将数据通过view模块渲染网页
         void Judge(int id, const string &inJson, string &outJson)：判题功能，用户传入inJson字符串，函数返回outJson字符串
-
+        outJson格式和code_process模块中的outJson相同
 */
 
 
@@ -206,6 +206,7 @@ namespace ns_control {
             }
             // 此次提交为自测
             else {
+                if (userIn.back() != '\n') userIn += '\n';
                 compileValue["in"].append(userIn);
             }
             // 序列化complieValue为compileJson
@@ -225,7 +226,7 @@ namespace ns_control {
                     if (res->status == 200) {
                         outJson = res->body;
                         m.DecreaseLoad();
-                        LOG(INFO) << "代码成功编译，服务ip和端口分别为：" << m.ip << ' ' << m.port << "\n";
+                        LOG(INFO) << "代码成功编译并运行，服务ip和端口分别为：" << m.ip << ' ' << m.port << "\n";
                         return; // 编译运行完成，直接返回
                     }
                     else {

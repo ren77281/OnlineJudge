@@ -32,6 +32,10 @@
             height: 100%;
         }
 
+        textarea {
+            resize: none; /* 禁止调整文本框大小 */
+        }
+
         .container {
             display: flex;
             flex-direction: column; /* 设置为水平布局 */
@@ -55,17 +59,29 @@
             margin-bottom: 20px; /* 设置间距 */
         }
 
-        .container .control .btn {
-            width: 120px;
-            height: 50px;
-            font-size: large;
+        .container .control #submit {
+            width: 100px;
+            height: 35px;
+            font-size: 16px;
             float: right;
             background-color: #26bb9c;
             color: #530808;
             /* 给按钮带上圆角 */
             border-radius: 1ch;
             border: 0px;
-            margin-top: 10px;
+            margin-bottom: 10px;
+            margin-right: 10px;
+        }
+
+        .container .control #test {
+            width: 100px;
+            height: 35px;
+            font-size: 16px;
+            float: right;
+            /* 给按钮带上圆角 */
+            border-radius: 1ch;
+            border: 0px;
+            margin-bottom: 10px;
             margin-right: 10px;
         }
         
@@ -88,7 +104,17 @@
         }
 
         .container .control .btns {
+            display: flex; 
             flex-direction: row; /* 设置为水平布局 */
+        }
+
+        .container .control .btns span {
+            font-size: 20px; /* 设置字体大小为 20像素 */
+            display: inline; /* 设置为行内元素，不会换行 */
+        }
+
+        .container .control .btns #result {
+            flex-grow: 1;
         }
 
         .container .control .data p::before {
@@ -139,6 +165,8 @@
         </div>
         <div class="control">
             <div class="btns">
+                <span>代码运行状态：</span>
+                <span id="result"></span>
                 <button class="btn" id="test" onclick="submit()">自测运行</button>
                 <button class="btn" id="submit" onclick="submit()">提交代码</button>
             </div>
@@ -146,7 +174,7 @@
                 <p id="pinput">输入</p>
                 <textarea id="input"></textarea>
                 <p id="poutput">输出</p>
-                <textarea id="output"></textarea>
+                <textarea id="output" readonly></textarea>
             </div>
         </div>
     </div>

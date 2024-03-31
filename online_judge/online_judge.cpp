@@ -32,6 +32,13 @@ int main() {
         resp.set_content(outJson, "application/json;charset=utf-8");
     });
 
+    svr.Post(R"(/test/(\d+))", [&](const Request &req, Response &resp){
+        string outJson;
+        string id = req.matches[1];
+        ctl.Judge(atoi(id.c_str()), req.body, outJson);
+        resp.set_content(outJson, "application/json;charset=utf-8");
+    });
+
     svr.set_base_dir("./wwwroot");
     svr.listen("0.0.0.0", 9090);
     return 0;
