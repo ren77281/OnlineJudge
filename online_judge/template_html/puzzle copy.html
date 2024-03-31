@@ -32,92 +32,111 @@
             height: 100%;
         }
 
-        .container {
-            display: flex;
-            flex-direction: column; /* 设置为水平布局 */
-            align-items: stretch; /* 默认值，让子元素沿着交叉轴（垂直方向）填满容器 */
-            flex: 1; /* 让三个子容器平分剩余空间 */
-            border: 1px solid #ccc; /* 设置边框为1像素实线，并设置颜色为灰色 */
-            border-radius: 5px; /* 设置边框的圆角 */
-            padding: 50px; /* 设置容器内边距 */
+        .container .navbar {
+            width: 100%;
+            height: 50px;
+            background-color: black;
+            /* 给父级标签设置overflow，取消后续float带来的影响 */
+            overflow: hidden;
         }
 
-        .container .desc {
-            border-radius: 5px; /* 设置边框的圆角 */
-            background-color: #f9f9f9; /* 设置背景颜色为浅灰色 */
-            padding: 8px; /* 设置文本框内部的填充为8像素 */
-            border: 1px solid #555; /* 设置边框为1像素实线，并设置颜色为深灰色 */
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 添加一个轻微的阴影效果 */
-            transition: all 0.3s ease; /* 添加一个平滑过渡效果 */
-        }
-    
-        .desc, .code, .control {
-            margin-bottom: 20px; /* 设置间距 */
+        .container .navbar a {
+            /* 设置a标签是行内块元素，允许你设置宽度 */
+            display: inline-block;
+            /* 设置a标签的宽度,a标签默认行内元素，无法设置宽度 */
+            width: 80px;
+            /* 设置字体颜色 */
+            color: white;
+            /* 设置字体的大小 */
+            font-size: large;
+            /* 设置文字的高度和导航栏一样的高度 */
+            line-height: 50px;
+            /* 去掉a标签的下划线 */
+            text-decoration: none;
+            /* 设置a标签中的文字居中 */
+            text-align: center;
         }
 
-        .container .control .btn {
+        /* 设置鼠标事件 */
+        .container .navbar a:hover {
+            background-color: green;
+        }
+
+        .container .navbar .login {
+            float: right;
+        }
+        
+        .container .part1 {
+            width: 100%;
+            height: 600px;
+            overflow: hidden;
+        }
+
+        .container .part1 .LeftDesc {
+            width: 50%;
+            height: 600px;
+            float: left;
+            overflow: scroll;
+        }
+
+        /* .container .part1 .LeftDesc pre {
+            padding-top: 10px;
+            padding-left: 10px;
+            font-size: medium;
+            font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        } */
+
+        .container .part1 .RightCode {
+            width: 50%;
+            float: right;
+        }
+
+        .container .part1 .RightCode .AceEditor {
+            height: 600px;
+        }
+        .container .part2 {
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .container .part2 .result {
+            width: 300px;
+            float: left;
+        }
+
+        .container .part2 .btn-submit {
             width: 120px;
             height: 50px;
             font-size: large;
             float: right;
             background-color: #26bb9c;
-            color: #530808;
+            color: #FFF;
             /* 给按钮带上圆角 */
             border-radius: 1ch;
             border: 0px;
             margin-top: 10px;
             margin-right: 10px;
         }
-        
-        /* 设置鼠标悬停按钮的颜色 */
-        .container .control button:hover {
+        .container .part2 button:hover {
             color:green;
         }
 
-        .container .control .btns {
-            margin-bottom: 10px; /* 设置间距 */
+        .container .part2 .result {
+            margin-top: 15px;
+            margin-left: 15px;
         }
 
-        .container .control .data #input {
-            margin-bottom: 10px; /* 设置间距 */
+        .container .part2 .result pre {
+            font-size: large;
         }
-
-        .container .control {
-            display: flex;
-            flex-direction: column; /* 设置为垂直布局 */
-        }
-
-        .container .control .btns {
-            flex-direction: row; /* 设置为水平布局 */
-        }
-
-        .container .control .data p::before {
-            content: "\00a0\00a0\00a0\00a0"; /* 添加两个空格 */
-        }
-
-        .container .control .data p {
-            font-size: 16px; /* 设置字体大小为 16 像素 */
-        }
-
-        .container .control .data textarea{
-            width: 99%;
-            max-height: 500px; /* 设置最大高度为 200px，您可以根据需要调整 */
-            overflow-y: auto; /* 当文本框内容超出最大高度时出现垂直滚动条 */
-            border: 1px solid #ccc; /* 设置边框为1像素实线，并设置颜色为灰色 */
-            border-radius: 5px; /* 设置边框的圆角 */
-            background-color: #f9f9f9; /* 设置背景颜色为浅灰色 */
-            padding: 8px; /* 设置文本框内部的填充为8像素 */
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 添加一个轻微的阴影效果 */
-            transition: all 0.3s ease; /* 添加一个平滑过渡效果 */
-        }
-
-        /* 隐藏容器内容 */ 
-        .puzzleId {
-        display: none;
-        }
-        .toChange {
-        display: none;
-        }
+        
+         /* 隐藏容器内容 */ 
+         .puzzleId {
+            display: none;
+         }
+         .toChange {
+            display: none;
+         }
     </style>
 </head>
 
@@ -126,36 +145,36 @@
     <div class="puzzleId"> <p>{{puzzleId}}</p> </div>
     <pre class="toChange" id="toChange">{{markdownText}}</pre>
     <div class="container">
-        <div class="desc" id="desc">
+        <!-- 导航栏， 功能不实现-->
+        <div class="navbar">
+            <a href="/">首页</a>
+            <a href="/puzzlelist">题库</a>
+            <a href="#">竞赛</a>
+            <a href="#">讨论</a>
+            <a href="#">求职</a>
+            <a class="login" href="#">登录</a>
+        </div>        
+        <!-- 左右呈现，题目描述和预设代码 -->
+        <div class="part1">
+            <div class="LeftDesc" id="LeftDesc"></div>
             <script>
-                // 呈现html格式的题目描述
                 let desc = document.getElementById('toChange').innerText;
                 let htmlContent = marked(desc);
-                document.getElementById('desc').innerHTML = htmlContent;
+                document.getElementById('LeftDesc').innerHTML = htmlContent;
             </script>
-        </div>
-        <div class="code">
-            <pre id="codeEditor" class="aceEditor"><textarea  class="ace_text-input"></textarea></pre>
-        </div>
-        <div class="control">
-            <div class="btns">
-                <button class="btn" id="test" onclick="submit()">自测运行</button>
-                <button class="btn" id="submit" onclick="submit()">提交代码</button>
+            <div class="RightCode">
+                <pre id="code" class="AceEditor"><textarea class="ace_text-input"></textarea></pre>
             </div>
-            <div class="data">
-                <p id="pinput">输入</p>
-                <textarea id="input"></textarea>
-                <p id="poutput">输出</p>
-                <textarea id="output"></textarea>
-            </div>
+        </div>
+        <!-- 提交并且得到结果，并显示 -->
+        <div class="part2">
+            <div class="result"></div>
+            <button class="btn-submit" onclick="submit()">提交代码</button>
         </div>
     </div>
-
     <script>
-        
-        
         //初始化对象
-        editor = ace.edit("codeEditor");
+        editor = ace.edit("code");
 
         //设置风格和语言（更多风格和语言，请到github上相应目录查看）
         // 主题大全：http://www.manongjc.com/detail/25-cfpdrwkkivkikmk.html
@@ -166,9 +185,6 @@
         editor.setFontSize(16);
         // 设置默认制表符的大小:
         editor.getSession().setTabSize(4);
-        // 设置 ACE 编辑器的宽度和高度
-        editor.container.style.width = '100%';
-        editor.container.style.height = '650px';
 
         // 设置只读（true时只读，用于展示代码）
         editor.setReadOnly(false);
@@ -181,23 +197,10 @@
             enableLiveAutocompletion: true
         });
 
-        function toggleExpand() {
-            let controlContainer = document.getElementById('controlContainer');
-            let rightCode = document.querySelector('.rightCode');
-            controlContainer.classList.toggle('expanded');
-            rightCode.classList.toggle('expanded');
-            let expandBtn = document.getElementById('expandBtn');
-            if (controlContainer.classList.contains('expanded')) {
-                expandBtn.innerText = '收起';
-            } else {
-                expandBtn.innerText = '展开';
-            }
-        }
-
         function submit(){
             // 1. 收集当前页面的有关数据, 1. 题号 2.代码
             let code = editor.getSession().getValue();
-            let puzzleId = $('.puzzleId').text().trim();
+            let puzzleId = $(".puzzleId").text().trim();
             let judgeUrl = "/judge/" + puzzleId;
             // 2. 构建json，并通过ajax向后台发起基于http的json请求
             $.ajax({
@@ -221,7 +224,7 @@
                 // console.log(data.status);
                 // console.log(data.reason);
                 // 选择存储运行结果的标签
-                let resultDiv = $(".container .right .result");
+                let resultDiv = $(".container .part2 .result");
                 // 清空上一次的运行结果
                 resultDiv.empty();
 
