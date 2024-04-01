@@ -59,6 +59,11 @@
             margin-bottom: 20px; /* 设置间距 */
         }
 
+        /* 设置鼠标悬停按钮的颜色 */
+        .container .control button:hover {
+            color:green;
+        }
+        
         .container .control #submit {
             width: 100px;
             height: 35px;
@@ -85,16 +90,13 @@
             margin-right: 10px;
         }
         
-        /* 设置鼠标悬停按钮的颜色 */
-        .container .control button:hover {
-            color:green;
-        }
+        
 
         .container .control .btns {
             margin-bottom: 10px; /* 设置间距 */
         }
 
-        .container .control .data #input {
+        .container .control .data #inputArea {
             margin-bottom: 10px; /* 设置间距 */
         }
 
@@ -118,7 +120,7 @@
         }
 
         .container .control .data p::before {
-            content: "\00a0\00a0\00a0\00a0"; /* 添加两个空格 */
+            content: "\00a0\00a0"; /* 添加两个空格 */
         }
 
         .container .control .data p {
@@ -127,22 +129,23 @@
 
         .container .control .data textarea{
             width: 99%;
-            max-height: 500px; /* 设置最大高度为 200px，您可以根据需要调整 */
-            overflow-y: auto; /* 当文本框内容超出最大高度时出现垂直滚动条 */
+            height: 1.2em;
+            line-height: 1.2em;
+            font-size: 16px; /* 设置字体大小为 16 像素 */
             border: 1px solid #ccc; /* 设置边框为1像素实线，并设置颜色为灰色 */
             border-radius: 5px; /* 设置边框的圆角 */
             background-color: #f9f9f9; /* 设置背景颜色为浅灰色 */
             padding: 8px; /* 设置文本框内部的填充为8像素 */
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 添加一个轻微的阴影效果 */
-            transition: all 0.3s ease; /* 添加一个平滑过渡效果 */
+            /* transition: all 0.3s ease; 添加一个平滑过渡效果，这将导致文本框自增时的波动 */ 
         }
 
         /* 隐藏容器内容 */ 
         .puzzleId {
-        display: none;
+            display: none;
         }
         .toChange {
-        display: none;
+            display: none;
         }
     </style>
 </head>
@@ -172,15 +175,22 @@
             </div>
             <div class="data">
                 <p id="pinput">输入</p>
-                <textarea id="input"></textarea>
+                <textarea id="inputArea" oninput="autoExpand(this)"></textarea>
                 <p id="poutput">输出</p>
-                <textarea id="output" readonly></textarea>
+                <textarea id="outputArea" readonly oninput="autoExpand(this)"></textarea>
             </div>
         </div>
     </div>
 
     <script>
-        
+        function autoExpand(textarea) {
+            // 计算文本框内容的高度
+            textarea.style.height = 'auto'; 
+            // 获取文本的行数
+            let text = textarea.value;
+            let lines = text.split('\n');
+            textarea.style.height = (lines.length * 1.2) + 'em';
+        }
         
         //初始化对象
         editor = ace.edit("codeEditor");
@@ -209,77 +219,63 @@
             enableLiveAutocompletion: true
         });
 
-        function toggleExpand() {
-            let controlContainer = document.getElementById('controlContainer');
-            let rightCode = document.querySelector('.rightCode');
-            controlContainer.classList.toggle('expanded');
-            rightCode.classList.toggle('expanded');
-            let expandBtn = document.getElementById('expandBtn');
-            if (controlContainer.classList.contains('expanded')) {
-                expandBtn.innerText = '收起';
-            } else {
-                expandBtn.innerText = '展开';
-            }
-        }
-
         function submit(){
+            // 0. 显示正在运行，提示用户等待
+            let resultSpan = document.getElementById('result');
+            resultSpan.style.color = 'black';
+            resultSpan.textContent = '正在运行...';
+            
             // 1. 收集当前页面的有关数据, 1. 题号 2.代码
+            let userIn = document.getElementById('inputArea').value;
             let code = editor.getSession().getValue();
             let puzzleId = $('.puzzleId').text().trim();
             let judgeUrl = "/judge/" + puzzleId;
             // 2. 构建json，并通过ajax向后台发起基于http的json请求
             $.ajax({
                 method: 'Post',   // 向后端发起请求的方式
-                url: judgeUrl,   // 向后端指定的url发起请求
-                dataType: 'json', // 告知server，我需要什么格式
-                contentType: 'application/json;charset=utf-8',  // 告知server，我给你的是什么格式
+                url: judgeUrl,    // 向后端指定的url发起请求
+                dataType: 'json', // 告知server，我需要返回数据的格式
+                contentType: 'application/json;charset=utf-8',  // 告知server，我发送数据的格式
                 data: JSON.stringify({
                     'code':code,
-                    'input': '' // TODO
+                    'userIn':userIn
                 }),
                 success: function(data){
                     //成功得到结果
-                    // console.log(data);
                     ShowResult(data);
                 }
             });
             // 3. 得到结果，解析并显示到 result中
             function ShowResult(data)
             {
-                // console.log(data.status);
-                // console.log(data.reason);
                 // 选择存储运行结果的标签
-                let resultDiv = $(".container .right .result");
-                // 清空上一次的运行结果
-                resultDiv.empty();
-
+                let resultSpan = document.getElementById('result');
+                    
                 // 首先拿到结果的状态码和原因结果
                 let status = data.status;
                 let reason = data.reason;
 
-                let reasonLable = $( "<p>",{
-                       text: reason
-                });
-                reasonLable.appendTo(resultDiv);
+                resultSpan.textContent = reason;
 
-                if(status == 0){
+                if(status == 0) {
                     // 请求是成功的，编译运行过程没出问题，但是结果是否通过看测试用例的结果
-                    let userOut = data.stdout;
-                    let userErr = data.stderr;
+                    let userOut = data.userOut;
 
-                    let userOutLable = $("<pre>", {
-                        text: userOut
-                    });
-
-                    let userErrLable = $("<pre>", {
-                        text: userErr
-                    })
-
-                    userOutLable.appendTo(resultDiv);
-                    userErrLable.appendTo(resultDiv);
+                    let outputArea = document.getElementById('outputArea');
+                    outputArea.value = userOut;
+                    resultSpan.style.color = 'green';
                 }
-                else{
-                    // 编译运行出错,do nothing
+                else {
+                    let comerr = data.comerr;
+                    let runerr = data.runerr;
+                    let outputArea = document.getElementById('outputArea');
+                    resultSpan.style.color = 'red';
+                    if (comerr.length > 0) {
+                        outputArea = comerr;
+                    }
+                    if (runerr.length > 0) {
+                        outputArea = runerr;
+                    }
                 }
             }
         }

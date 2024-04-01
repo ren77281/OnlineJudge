@@ -22,6 +22,9 @@
         bool LoadPuzzleList(string &html)：加载题目列表，通过model模块获取briefPuzzles，再将数据通过view模块渲染网页
         bool LoadOnePuzzle(int id, string &html)：加载具体题目，通过model模块获取具体题目的信息Puzzle，再将数据通过view模块渲染网页
         void Judge(int id, const string &inJson, string &outJson)：判题功能，用户传入inJson字符串，函数返回outJson字符串
+        inJson格式：
+        code：用户提交的代码
+        userIn：用户自测输入的数据
         outJson格式和code_process模块中的outJson相同
 */
 
@@ -93,7 +96,6 @@ namespace ns_control {
                 vector<string> tokens;
                 StringUtil::SplitString(line, tokens, ":");
                 if (tokens.size() != 2) {
-                    // if (tokens.size()) std::cout << tokens[0] << "\n";
                     LOG(FATAL) << "machine.conf存在格式错误\n";
                     continue;
                 }

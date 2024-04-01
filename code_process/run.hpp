@@ -54,7 +54,7 @@ namespace ns_run {
                 }
                 else if (pid == 0) {
                     umask(0);
-                      int inFileFd = open(inFile.c_str(), O_CREAT | O_TRUNC | O_RDWR, 0644);
+                    int inFileFd = open(inFile.c_str(), O_CREAT | O_TRUNC | O_RDWR, 0644);
                     int outFileFd = open(outFile.c_str(), O_CREAT | O_TRUNC | O_RDWR, 0644);
                     int errFileFd = open(errFile.c_str(), O_CREAT | O_TRUNC | O_RDWR, 0644);
                     if (inFileFd < 0 || outFileFd < 0 || errFileFd < 0) {
@@ -67,8 +67,6 @@ namespace ns_run {
                         LOG(FATAL) << "写入标准输入文件失败！\n";
                         return -3;
                     }
-                    // std::cout << "这是当前输入\n";
-                    // std::cout << FileUtil::ReadFile(PathUtil::In(fileName), true);
                     // 设置程序的资源限制
                     SetRLimit(timeLimit, memLimit);
                     // 将标准流重定向到文件
@@ -86,8 +84,6 @@ namespace ns_run {
                         LOG(ERROR) << "子进程异常退出，退出码为:" << (status & 0xff) << "\n";
                         return status & 0xff;
                     }
-                    // std::cout << "这是当前输出\n";
-                    // std::cout << FileUtil::ReadFile(PathUtil::Out(fileName), true);
                     // 保存用户的输出
                     userOut.push_back(FileUtil::ReadFile(PathUtil::Out(fileName), true));
                 }

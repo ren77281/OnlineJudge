@@ -56,7 +56,6 @@ namespace ns_code_process {
             int count = 1;
             for (const auto& str : inValue["in"]) {
                 in.push_back(str.asString());
-
             }
             count = 1;
             for (const auto& str : inValue["out"]) {
@@ -99,7 +98,7 @@ namespace ns_code_process {
                     continue; 
                 }
                 // 用户代码正确运行且此时的请求为判题，将正确结果和用户的输出结果比较
-                else if (in.size() != 1) { 
+                else if (in.size() != 1) {
                     if (out.size() != userOut.size()) {
                         status = -4;
                         continue;
@@ -123,7 +122,6 @@ namespace ns_code_process {
             outValue["reason"] = StatusToReason(status);
             Json::StreamWriterBuilder writerBuilder;
             outJson = Json::writeString(writerBuilder, outValue);
-            std::cout << outJson << "\n";
             // 清理临时文件
             CleanTempFile(fileName);
         }
