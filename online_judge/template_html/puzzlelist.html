@@ -66,6 +66,9 @@
 
         .container .htmlPuzzleList table {
             width: 100%;
+            border: 1px solid #a3a2a2; /* 设置表格的边框为深灰色 */
+            border-radius: 10px; /* 设置边框的圆角半径 */
+            overflow: hidden; /* 隐藏超出圆角的内容 */
             font-size: large;
             font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
             margin-top: 50px;
@@ -81,12 +84,13 @@
             font-size: large;
             font-family:'Times New Roman', Times, serif;
         }
+
         .container .htmlPuzzleList table .item a {
             text-decoration: none;
-            color: black;
+            color: #337ab7;
         }
         .container .htmlPuzzleList table .item a:hover {
-            color: blue;
+            color: rgb(56, 56, 202);
             text-decoration:underline;
         }
         .container .footer {
@@ -112,7 +116,7 @@
             <a class="login" href="#">登录</a>
         </div>
         <div class="htmlPuzzleList">
-            <h1>OnlineJuge题目列表</h1>
+            <h1>OnlineJuge在线题库</h1>
             <table>
                 <tr>
                     <th class="item">编号</th>
