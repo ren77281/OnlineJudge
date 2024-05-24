@@ -97,8 +97,11 @@ namespace ns_code_process {
                     outValue["runerr"] = fileRunerr; 
                     continue; 
                 }
-                // 用户代码正确运行且此时的请求为判题，将正确结果和用户的输出结果比较
-                else if (in.size() != 1) {
+                /*  用户代码正确运行且此时的请求为判题，将正确结果和用户的输出结果比较
+                *   程序的测试用例大于1，可以视为此次提交为判题
+                *   用例数为0或者1，可以视为自测
+                */
+                else if (in.size() > 1) {
                     if (out.size() != userOut.size()) {
                         status = -4;
                         continue;

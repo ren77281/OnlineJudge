@@ -23,6 +23,7 @@
         bool LoadOnePuzzle(int id, string &html)：加载具体题目，通过model模块获取具体题目的信息Puzzle，再将数据通过view模块渲染网页
         void Judge(int id, const string &inJson, string &outJson)：判题功能，用户传入inJson字符串，函数返回outJson字符串
         inJson格式：
+        action：自测/提交
         code：用户提交的代码
         userIn：用户自测输入的数据
         outJson格式和code_process模块中的outJson相同
@@ -119,7 +120,7 @@ namespace ns_control {
             }
             
             id = online[0], m = machines[online[0]];
-            for (int i = 1; i < online.size(); ++ i) {
+            for (int i = 0; i < online.size(); ++ i) {
                 if (machines[online[i]].load < machines[online[id]].load) {
                     id = online[i], m = machines[online[id]];
                 }
@@ -153,15 +154,15 @@ namespace ns_control {
         View view;
         LoadBalancer loadBalancer;
     public:
-        // 加载题目列表
-        bool LoadPuzzleList(string &html) {
+        // 渲染题目列表
+       bool LoadPuzzleList(string &html) {
             vector<BriefPuzzle> puzzles;
             if (model.GetPuzzleList(puzzles)) {
                 view.ExpandList(puzzles, html);
             }
             return false;
-        }
-        // 加载具体题目
+        } 
+        // 渲染具体题目
         bool LoadOnePuzzle(int id, string &html) {
             struct Puzzle puzzle;
             if (model.GetOnePullze(id, puzzle)) {
@@ -170,10 +171,11 @@ namespace ns_control {
             return false;
         }
 
-        // 核心判题功能，根据题号获取题目的具体信息，调用code_process服务编译运行代码
-        // inJson
-        // code：用户提交的代码
-        // userIn：用户自测输入的数据
+        /*  核心判题功能，根据题号获取题目的具体信息，调用code_process服务编译运行代码
+        *   inJson
+        *   code：用户提交的代码   
+        *   userIn：用户自测输入的数据
+        */
         void Judge(int id, const string &inJson, string &outJson) {
             // 反序列化用户提交的Json串
             Json::Value inValue;
@@ -186,6 +188,7 @@ namespace ns_control {
             }
             string code = inValue["code"].asString();
             string userIn = inValue["userIn"].asString();
+            string action = inValue["action"].asString();
 
             // 获取题目的具体信息
             struct Puzzle p;
@@ -198,7 +201,7 @@ namespace ns_control {
             compileValue["memLimit"] = p.memLimit;
             compileValue["timeLimit"] = p.timeLimit;
             // 此次提交为判题
-            if (userIn.empty()) {
+            if (action == "submit") {
                 for (auto t : p.in) {
                     compileValue["in"].append(t);
                 }
@@ -208,7 +211,7 @@ namespace ns_control {
             }
             // 此次提交为自测
             else {
-                if (userIn.back() != '\n') userIn += '\n';
+                if (!userIn.empty() && userIn.back() != '\n') userIn += '\n';
                 compileValue["in"].append(userIn);
             }
             // 序列化complieValue为compileJson

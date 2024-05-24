@@ -12,7 +12,7 @@ using namespace httplib;
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
-        std::cout << "usage:\n\t" << argv[1] << " port\n";
+        std::cout << "usage:\n\t" << " port\n";
         return 1;
     }
     httplib::Server svr;

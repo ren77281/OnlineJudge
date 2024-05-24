@@ -1,6 +1,0 @@
-{{#puzzleList}}
-{{id}}.
-{{title}}.
-{{hard}}.
-{{/puzzleList}}
-1111

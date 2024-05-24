@@ -169,14 +169,14 @@
             <div class="btns">
                 <span>代码运行状态：</span>
                 <span id="result"></span>
-                <button class="btn" id="test" onclick="submit()">自测运行</button>
-                <button class="btn" id="submit" onclick="submit()">提交代码</button>
+                <button class="btn" id="test" onclick="judge('test')">自测运行</button>
+                <button class="btn" id="submit" onclick="judge('submit')">提交代码</button>
             </div>
             <div class="data">
                 <p id="pinput">输入</p>
                 <textarea id="inputArea" oninput="autoExpand(this)"></textarea>
                 <p id="poutput">输出</p>
-                <textarea id="outputArea" readonly oninput="autoExpand(this)"></textarea>
+                <textarea id="outputArea" readonly></textarea>
             </div>
         </div>
     </div>
@@ -218,14 +218,16 @@
             enableLiveAutocompletion: true
         });
 
-        function submit(){
-            // 0. 显示正在运行，提示用户等待
+
+        function judge(type) {
+            // 显示正在运行，提示用户等待
             let resultSpan = document.getElementById('result');
             resultSpan.style.color = 'black';
             resultSpan.textContent = '正在运行...';
             
-            // 1. 收集当前页面的有关数据, 1. 题号 2.代码
+            // 收集当前页面的有关数据（用户的自测输入，代码，题号）
             let userIn = document.getElementById('inputArea').value;
+            if (type == 'submit') userIn = "";
             let code = editor.getSession().getValue();
             let puzzleId = $('.puzzleId').text().trim();
             let judgeUrl = "/judge/" + puzzleId;
@@ -237,31 +239,35 @@
                 contentType: 'application/json;charset=utf-8',  // 告知server，我发送数据的格式
                 data: JSON.stringify({
                     'code':code,
-                    'userIn':userIn
+                    'userIn':userIn,
+                    'action':type
                 }),
                 success: function(data){
                     //成功得到结果
-                    ShowResult(data);
+                    ShowResult(data, type);
                 }
             });
             // 3. 得到结果，解析并显示到 result中
-            function ShowResult(data)
+            function ShowResult(data, type)
             {
                 // 选择存储运行结果的标签
                 let resultSpan = document.getElementById('result');
                     
                 // 首先拿到结果的状态码和原因结果
                 let status = data.status;
-                let reason = data.reason;
+                let reason = data.reason.trim();
+                if (reason == '运行成功！' && type == 'submit') reason = '恭喜通过！';
 
                 resultSpan.textContent = reason;
 
                 if(status == 0) {
                     // 请求是成功的，编译运行过程没出问题，但是结果是否通过看测试用例的结果
-                    let userOut = data.userOut;
-
-                    let outputArea = document.getElementById('outputArea');
-                    outputArea.value = userOut;
+                    if (type == 'test') {
+                        let userOut = data.userOut;
+                        let outputArea = document.getElementById('outputArea');
+                        outputArea.value = userOut;
+                        autoExpand(outputArea);
+                    }
                     resultSpan.style.color = 'green';
                 }
                 else {
@@ -269,10 +275,10 @@
                     let runerr = data.runerr;
                     let outputArea = document.getElementById('outputArea');
                     resultSpan.style.color = 'red';
-                    if (comerr.length > 0) {
+                    if (comerr && comerr.length > 0) {
                         outputArea = comerr;
                     }
-                    if (runerr.length > 0) {
+                    if (runerr && runerr.length > 0) {
                         outputArea = runerr;
                     }
                 }

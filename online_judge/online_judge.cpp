@@ -12,6 +12,13 @@ int main() {
     httplib::Server svr;
     Control ctl;
 
+    // 设置根网页
+    svr.Get("/", [&](const Request &req, Response &resp){
+        string html;
+        ctl.LoadPuzzleList(html);
+        resp.set_content(html, "text/html;charset=utf-8");
+    });
+
     svr.Get("/puzzlelist", [&](const Request &req, Response &resp){
         string html;
         ctl.LoadPuzzleList(html);
@@ -32,7 +39,6 @@ int main() {
         resp.set_content(outJson, "application/json;charset=utf-8");
     });
 
-    svr.set_base_dir("./wwwroot");
-    svr.listen("0.0.0.0", 9090);
+    svr.listen("0.0.0.0", 8000);
     return 0;
 }
