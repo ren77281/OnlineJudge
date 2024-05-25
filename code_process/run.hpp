@@ -81,7 +81,7 @@ namespace ns_run {
                     int status = 0;
                     waitpid(pid, &status, 0);
                     if (status & 0xff) {
-                        LOG(ERROR) << "子进程异常退出，退出码为:" << (status & 0xff) << "\n";
+                        LOG(INFO) << "子进程异常退出，退出码为:" << (status & 0xff) << "\n";
                         return status & 0xff;
                     }
                     // 保存用户的输出

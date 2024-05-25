@@ -3,20 +3,21 @@ version: '3.8'
 services:
   container1:
     image: code_process_server
-    # 容器创建后执行的命令
     command: ["/home/work/code_process_server", "8050"]
-    # 与宿主机端口号之间的映射
     ports:
       - "8050:8050"
+    restart: unless-stopped
 
   container2:
     image: code_process_server
     command: ["/home/work/code_process_server", "8051"]
     ports:
       - "8051:8051"
+    restart: unless-stopped
 
   container3:
     image: code_process_server
     command: ["/home/work/code_process_server", "8052"]
     ports:
       - "8052:8052"
+    restart: unless-stopped

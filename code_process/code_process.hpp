@@ -140,6 +140,7 @@ namespace ns_code_process {
 
         static string StatusToReason(int status) {
             string reason;
+            if (status > 128) status -= 128;
             switch (status) {
             case -1:
                 reason = "用户代码为空\n";

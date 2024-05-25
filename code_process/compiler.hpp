@@ -46,7 +46,6 @@ namespace ns_compiler {
                 if (FileUtil::IsExist(PathUtil::Exe(fileName))) {
                     return 0;
                 }
-                LOG(ERROR) << "没有生成可执行文件\n";
                 return 1;
             }
         }

@@ -276,10 +276,16 @@
                     let outputArea = document.getElementById('outputArea');
                     resultSpan.style.color = 'red';
                     if (comerr && comerr.length > 0) {
-                        outputArea = comerr;
+                        outputArea.value = comerr;
+                        autoExpand(outputArea);
                     }
-                    if (runerr && runerr.length > 0) {
-                        outputArea = runerr;
+                    else if (runerr && runerr.length > 0) {
+                        outputArea.value = runerr;
+                        autoExpand(outputArea);
+                    }
+                    else {
+                        outputArea.value = '';
+                        autoExpand(outputArea);
                     }
                 }
             }
