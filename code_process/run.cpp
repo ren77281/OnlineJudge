@@ -1,28 +1,10 @@
-#pragma once
-
-#include <string>
-#include <unistd.h>
-#include "../comm/util.hpp"
-#include "../comm/log.hpp"
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/time.h>
-#include <sys/resource.h>
-
-/*
-    run.hpp：负责源文件的运行
-    static void SetRLimit(int timeLimit, int memLimit)：设置进程能使用的资源上限，也就是设置程序可使用的时间与空间
-    static int Run(const string& fileName, vector<string> &in, vector<string> &userOut, 
-    int timeLimit, int memLimit)：根据测试用例in运行可执行程序，保存结果到userOut中。有几个用例就创建几个子进程运行用例
-    返回值为int，若>0表示子进程异常，被系统信号终止。=0表示运行完毕，无异常发生。<0表示遇到系统自身的错误
-*/
+#include "run.h"
 
 namespace ns_run {
     using std::string;
-    class Runer {
-    public:
-        // 限制程序资源：时长（秒），内存（MB）
-        static void SetRLimit(int timeLimit, long long memLimit) {
+    using std::vector;
+    using namespace ns_util;
+        void Runer::SetRLimit(int timeLimit, int memLimit) {
             // 内存的单位转换
             memLimit = memLimit * 1024 * 1024;
             // 设置时间（cpu时长）限制
@@ -34,10 +16,7 @@ namespace ns_run {
             memRLimit.rlim_cur = memLimit, memRLimit.rlim_max = RLIM_INFINITY;
             setrlimit(RLIMIT_AS, &memRLimit);
         }
-        // 文件名 标准答案的输入 用户的输出 时间限制 空间限制
-        // 指定了程序的标准输入为in，创建多个子进程分别执行每个用例
-        // 保存用户的输出到userOut中
-        static int Run(const string& fileName, 
+        int Runer::Run(const string& fileName, 
             vector<string> &in, vector<string> &userOut,
             int timeLimit, int memLimit) {
             string exeFile = PathUtil::Exe(fileName);
@@ -90,5 +69,4 @@ namespace ns_run {
             }
             return 0;
         }
-    };
 }
